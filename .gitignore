@@ -1,0 +1,28 @@
+# Virtual Environment
+.venv/
+env/
+venv/
+
+# IDE (e.g., PyCharm)
+.idea/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and Debug Files
+*.log
+logs/
+
+# Allure Reports
+allure-results/
+allure-report/
+
+# Sensitive Environment Variables
+.env
+
+# Testing Configurations
+pytest.ini
+
