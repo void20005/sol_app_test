@@ -33,7 +33,7 @@ GOOGLE_PASSWORD=your-google-password
 python -m venv venv
 source venv/bin/activate
 ```
-#### WIN
+#### Win
 ```
 
 python -m venv venv
@@ -44,7 +44,6 @@ venv\Scripts\activate
 ```
 pip install -r requirements.txt
 ```
-
 
 ### RUNNING TESTS
 
@@ -96,5 +95,6 @@ Python 3.8+
 Pytest: Test framework for efficient testing.
 Selene: A wrapper for Selenium for simplified web element interactions.
 Allure: A powerful tool for generating advanced test reports.
+Requests: A library for making HTTP requests, enabling robust API testing.
 ```
 ```
