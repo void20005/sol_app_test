@@ -15,7 +15,7 @@ A comprehensive automated testing project for a web application, leveraging **Py
 
 ### **Installation (Linux, Mac, Win):**
 ```
-git clone git@github.com:RabauAliaksandr/WebAppTesting.git
+git clone git@github.com:void20005/sol_app_test.git
 cd sol_app_test
 ```
 #### Create .env file with variables like:
