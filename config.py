@@ -6,6 +6,7 @@ load_dotenv()
 
 # Base URL for the application
 BASE_URL = os.getenv('BASE_URL')
+BASE_URL_API = os.getenv('BASE_URL_API')
 
 # Credentials for login
 USER_EMAIL = os.getenv('USER_EMAIL')

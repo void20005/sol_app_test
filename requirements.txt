@@ -3,3 +3,4 @@ requests
 allure-pytest
 selene>=2.0.b4
 python-dotenv
+requests==2.31.0

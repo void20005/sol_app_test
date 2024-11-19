@@ -19,6 +19,7 @@ cd sol_app_test
 #### Create .env file with variables like:
 ```
 BASE_URL=https://your-web-app-url.com
+BASE_URL_API=https://your-web-app-url-api.com
 USER_EMAIL=your-email@example.com
 USER_PASSWORD=your-password
 GOOGLE_EMAIL=your-google-email@example.com

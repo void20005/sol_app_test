@@ -1,4 +1,6 @@
 import allure
+import pytest
+
 from pages.login_page import LoginPage
 from config import BASE_URL, USER_EMAIL, USER_PASSWORD
 from selene.support.shared.jquery_style import s
@@ -9,6 +11,7 @@ from selene.support.conditions import be, have
 @allure.severity(allure.severity_level.BLOCKER)
 @allure.feature('Authentication')
 @allure.story('Successful login')
+@pytest.mark.ui
 def test_successful_login():
     login_page = LoginPage()
     # Step 1: Open the login page
@@ -22,6 +25,7 @@ def test_successful_login():
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.feature("Authentication")
 @allure.story("Sign in with Google")
+@pytest.mark.ui
 def test_google_authorization():
     login_page = LoginPage()
 
