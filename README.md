@@ -10,6 +10,8 @@ A comprehensive automated testing project for a web application, leveraging **Py
 - **Allure Reporting**: Generate user-friendly, detailed reports for test results.
 - **Environment Configuration**: Use a `.env` file to manage sensitive data, such as URLs, emails, and passwords.
 - **Pytest Framework**: Lightweight and scalable for various testing needs.
+- **API Testing**: API testing with Request library
+- **Integration testing**: UI & API
 
 ### **Installation (Linux, Mac, Win):**
 ```
@@ -66,6 +68,15 @@ python -m pytest -k test_successful_login
 ```
 python -m pytest
 ```
+#### Run only API tests:
+```
+python pytest -m api
+```
+#### Run only integration tests:
+```
+python pytest -m integation
+```
+
 #### Run all tests with allure report:
 ```
 pytest --alluredir=allure-results
