@@ -23,6 +23,4 @@ allure-report/
 # Sensitive Environment Variables
 .env
 
-# Testing Configurations
-pytest.ini
 
