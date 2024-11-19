@@ -1,6 +1,6 @@
 # WebApp Testing
 
-A comprehensive automated testing project for a web application, leveraging **Pytest**, **Selene**, and **Allure** for seamless testing and reporting.
+A comprehensive automated testing project for a web application, leveraging **Pytest**, **Selene**, **Requests** and **Allure** for seamless testing and reporting.
 
 ---
 
