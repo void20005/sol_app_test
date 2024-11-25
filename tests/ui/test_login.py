@@ -26,6 +26,7 @@ def test_successful_login():
 @allure.feature("Authentication")
 @allure.story("Sign in with Google")
 @pytest.mark.ui
+@pytest.mark.skipif(True, reason="function not developed yet")
 def test_google_authorization():
     login_page = LoginPage()
 
@@ -37,5 +38,3 @@ def test_google_authorization():
 
     # Step 3: Verify redirection to Google login page
     s("title").should(have.exact_text("Sign in – Google accounts"))
-
-

@@ -1,4 +1,4 @@
-# WebApp Testing
+# sol_app_test
 
 A comprehensive automated testing project for a web application, leveraging **Pytest**, **Selene**, **Requests** and **Allure** for seamless testing and reporting.
 
@@ -73,7 +73,7 @@ python pytest -m api
 ```
 #### Run only integration tests:
 ```
-python pytest -m integation
+python pytest -m integration
 ```
 
 #### Run all tests with allure report:

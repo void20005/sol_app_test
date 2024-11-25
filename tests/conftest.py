@@ -2,7 +2,6 @@
 import allure
 import pytest
 from selene.support.shared import browser
-
 from api.base_api import BaseApi
 from config import USER_EMAIL, USER_PASSWORD
 
@@ -22,7 +21,7 @@ def pytest_runtest_setup(item):
         item.fixturenames.append("setup_browser")
         item.fixturenames.append("authorized_api")
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def setup_browser():
     #browser.config.base_url = "https://"
     browser.config.window_width = 1200
