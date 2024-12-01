@@ -71,6 +71,16 @@ python -m pytest
 ```
 python pytest -m api
 ```
+#### Run only smoke tests:
+```
+python pytest -m smoke
+```
+
+#### Run only regression  tests:
+```
+python pytest -m regression 
+```
+
 #### Run only integration tests:
 ```
 python pytest -m integration

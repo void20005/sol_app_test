@@ -15,3 +15,6 @@ USER_PASSWORD = os.getenv('USER_PASSWORD')
 # Google account credentials (if needed for other tests)
 GOOGLE_EMAIL = os.getenv('GOOGLE_EMAIL')
 GOOGLE_PASSWORD = os.getenv('GOOGLE_PASSWORD')
+
+# Path to test data
+PATH_DATA = os.getenv('PATH_DATA')

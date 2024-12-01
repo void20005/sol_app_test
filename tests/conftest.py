@@ -1,25 +1,27 @@
 # tests/conftest.py
+
 import allure
 import pytest
 from selene.support.shared import browser
 from api.base_api import BaseApi
 from config import USER_EMAIL, USER_PASSWORD
+from data.generator_data import GeneratorData
 
 
-def pytest_runtest_setup(item):
-    """
-    Hook to dynamically add fixtures based on test markers.
-    """
-    if "ui" in item.keywords:
-        print(f"Setting up UI environment for test: {item.name}")
-        item.fixturenames.append("setup_browser")
-    elif "api" in item.keywords:
-        print(f"Setting up API environment for test: {item.name}")
-        item.fixturenames.append("authorized_api")
-    elif "integration" in item.keywords:
-        print(f"Setting up Integration environment for test: {item.name}")
-        item.fixturenames.append("setup_browser")
-        item.fixturenames.append("authorized_api")
+#def pytest_runtest_setup(item):
+#   """
+#    Hook to dynamically add fixtures based on test markers.
+#    """
+#    if "ui" in item.keywords:
+#        print(f"Setting up UI environment for test: {item.name}")
+#        item.fixturenames.append("setup_browser")
+#    elif "api" in item.keywords:
+#        print(f"Setting up API environment for test: {item.name}")
+#        item.fixturenames.append("authorized_api")
+#    elif "integration" in item.keywords:
+#        print(f"Setting up Integration environment for test: {item.name}")
+#        item.fixturenames.append("setup_browser")
+#        item.fixturenames.append("authorized_api")
 
 @pytest.fixture()
 def setup_browser():
@@ -59,9 +61,18 @@ def authorized_api(auth_token):
     return api
 
 @pytest.fixture
+def auth_api_data(authorized_api):
+    data = GeneratorData()
+    yield authorized_api, data
+    # Remove test data from the system
+    for resume_id in data.resume_valid_ids:
+        response = authorized_api.request("DELETE", f"resume-ats/{resume_id}")
+        assert response.status_code in [200], f"Failed to delete resume {resume_id}"
+
+@pytest.fixture
 def integration_fixture(setup_browser, authorized_api):
     """Combines UI and API setup for integration tests."""
     return {
         "browser": browser,
-        "api": authorized_api,
+        "api": authorized_api
     }
