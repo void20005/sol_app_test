@@ -17,15 +17,17 @@ def create_resume(api, data):
     response = api.request("POST", "resumes/ats-review-text", json=payload)
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
-    assert len(response_data["data"]) > 0, "No tailored resume returned"
-
+    # Check new vail id is present in the response
+    assert "id" in response_data["data"][0], "Key 'id' not found in the response"
+    assert isinstance(response_data["data"][0]["id"], int), "id is not an integer"
+    #add new resumes ids into the list
     for item in response_data["data"]:
         data.resume_valid_ids.append(item["id"])
     return data.resume_valid_ids[0]
 
 def create_base_resume(api, data):
     """
-    Helper function to create a resume and return its ID.
+    Helper function to create a base-resume and return its ID.
     """
     payload = {
         "resumeName": data.generate_resume_name(),
@@ -34,6 +36,9 @@ def create_base_resume(api, data):
     response = api.request("POST", "base-resumes", json=payload)
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
+    print(response_data['data']['id'])
+    assert "id" in response_data['data'],"Key 'id' not found in the response"
+    assert isinstance(response_data["data"]["id"], int), "id is not an integer"
     resume_id = response_data["data"]["id"]
     return resume_id
 
@@ -105,9 +110,11 @@ def test_tailor_resume_particular_job_valid_data(auth_api_data):
         "resumeId": resume_id
     }
     response = api.request("POST", "resumes/ats-review-base", json = payload)
-    response_resume_id = response.json()["data"]["id"]
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
-    assert len(response.json()["data"]) > 0, "No tailored resume returned"
+    response_data = response.json()
+    assert "id" in response_data['data'], "Key 'id' not found in the response"
+    assert isinstance(response_data["data"]["id"], int), "id is not an integer"
+    response_resume_id = response.json()["data"]["id"]
     data.resume_valid_ids.append(response_resume_id)
 
 
@@ -131,8 +138,8 @@ def test_submit_file_review(auth_api_data):
         response = api.request("POST", "resumes/ats-review-file", files=files)
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
-    assert "data" in response_data, "Key 'data' not found in response"
-    assert len(response_data["data"]) > 0, "No data in response"
+    assert "id" in response_data['data'][0], "Key 'id' not found in response"
+    assert isinstance(response_data["data"][0]["id"], int), "id is not an integer"
     data.resume_valid_ids.append(response_data["data"][0]["id"])
 
 
@@ -144,9 +151,14 @@ def test_fetch_resumes_pagination(authorized_api):
     """
     Fetch resumes with pagination
     """
+    number_of_pages = 10
     api = authorized_api
-    response = api.request("GET", "resume-ats", params={"page": 1, "take": 10, "orderBy": "createdAt", "order": "ASC"})
+    response = api.request("GET", "resume-ats", params={"page": 1, "take": number_of_pages, "orderBy": "createdAt", "order": "ASC"})
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    response_data = response.json()
+    assert len(response_data["data"]) == number_of_pages, f"Expected {number_of_pages} items in 'data', but got a different count"
+    ids = [item["id"] for item in response_data["data"]]
+    assert len(ids) == len(set(ids)), "IDs are not unique"
 
 
 @allure.feature("Resume Builder")
@@ -161,6 +173,9 @@ def test_fetch_resumes_statuses(auth_api_data):
     resume_id_1 = create_resume(api, data)
     response = api.request("GET", "resume-ats/statuses", params={"ids": resume_id_1})
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    response_data = response.json()
+    assert "id" in response_data['data'][0], "Key 'id' not found in response"
+    assert "status" in response_data['data'][0], "Key 'status' not found in response"
 
 
 @allure.feature("Resume Builder")
@@ -175,29 +190,60 @@ def test_fetch_resume_by_id(auth_api_data):
     resume_id = create_resume(api, data)
     response = api.request("GET", f"resume-ats/{resume_id}")
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+    response_data = response.json()
+    assert "id" in response_data['data'], "Key 'id' not found in the response"
+    assert "resume" in response_data['data'], "'Resume' not found in the response"
 
 @allure.feature("Resume Builder")
 @allure.story("Update resume details - RB9.1")
 @pytest.mark.smoke
 @pytest.mark.regression
+@pytest.mark.integration
 def test_update_resume(auth_api_data):
     """
     Update resume details
     """
     api, data = auth_api_data
     resume_id = create_resume(api, data)
-    payload = {"jobDescriptions": data.generate_job_description(1), "resumeName": data.generate_resume_name(), "resume": json.dumps(data.generate_resume())}
+    new_resume_payload = data.generate_resume()
+    payload = {"jobDescriptions": data.generate_job_description(1), "resumeName": data.generate_resume_name(), "resume": json.dumps(new_resume_payload)}
     response = api.request("PATCH", f"resume-ats/{resume_id}", json=payload)
     print(response)
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+    response = api.request("GET", f"resume-ats/{resume_id}")
     response_data = response.json()
-    print(response_data)
-    #assert "data" in response_data, "Key 'data' not found in response"
-    #assert len(response_data["data"]) > 0, "No data in response"
-    #data.resume_valid_ids.append(response_data["data"][0]["id"])
+    # Parse resume from the servers answer
+    resume_raw = response_data["data"]['resume']
+    if isinstance(resume_raw, dict) and all(isinstance(k, str) and k.isdigit() for k in resume_raw.keys()):
+        resume_string = ''.join(resume_raw[str(i)] for i in range(len(resume_raw)))
+        updated_resume = json.loads(resume_string)
+    else:
+        updated_resume = resume_raw
+    assert updated_resume == new_resume_payload, "Update was not successful"
 
 
-
+@allure.feature("Resume Builder")
+@allure.story("Delete resume by ID - RB10.1")
+@pytest.mark.smoke
+@pytest.mark.regression
+def test_delete_resume_by_id(auth_api_data):
+    """
+    Delete resume by ID - RB10.1
+    """
+    api, data = auth_api_data
+    payload = {
+        "jobDescriptions": json.dumps(data.generate_job_description(1)),
+        "resumeName": data.generate_resume_name(),
+        "resume": json.dumps(data.generate_resume())
+    }
+    response = api.request("POST", "resumes/ats-review-text", json=payload)
+    assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
+    response_data = response.json()
+    resume_id = response_data['data'][0]['id']
+    response = api.request("DELETE", f"resume-ats/{resume_id}")
+    assert response.status_code in [200], f"Failed to delete resume {resume_id}"
+    response = api.request("DELETE", f"resume-ats/{resume_id}")
+    assert response.status_code in [400], f"Failed to delete resume {resume_id}"
 
 
 

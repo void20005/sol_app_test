@@ -23,4 +23,4 @@ allure-report/
 # Sensitive Environment Variables
 .env
 
-
+test.py
