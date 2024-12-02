@@ -1,6 +1,6 @@
 # sol_app_test
 
-A comprehensive automated testing project for a web application, leveraging **Pytest**, **Selene**, **Requests** and **Allure** for seamless testing and reporting.
+A comprehensive automated testing project for a web application, leveraging **Pytest**, **Selenium(Selene)**, **Requests** and **Allure** for seamless testing and reporting.
 
 ---
 
@@ -11,7 +11,8 @@ A comprehensive automated testing project for a web application, leveraging **Py
 - **Environment Configuration**: Use a `.env` file to manage sensitive data, such as URLs, emails, and passwords.
 - **Pytest Framework**: Lightweight and scalable for various testing needs.
 - **API Testing**: API testing with Request library
-- **Integration testing**: UI & API
+- **Integration testing**: UI & API, API & API
+- **End to end testing**: UI & UI
 
 ### **Installation (Linux, Mac, Win):**
 ```
@@ -85,7 +86,10 @@ python pytest -m regression
 ```
 python pytest -m integration
 ```
-
+#### Run only e2e tests:
+```
+python pytest -m e2e
+```
 #### Run all tests with allure report:
 ```
 pytest --alluredir=allure-results

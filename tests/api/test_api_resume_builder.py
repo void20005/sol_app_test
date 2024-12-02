@@ -35,9 +35,6 @@ def create_base_resume(api, data):
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
     resume_id = response_data["data"]["id"]
-    print(f"Extracted Resume ID: {resume_id}")
-    #data.resume_valid_ids.append(resume_id)
-
     return resume_id
 
 @allure.feature("Resume Builder")
@@ -55,8 +52,6 @@ def test_retry_fetch_resume_valid_id(auth_api_data):
     response = api.request("GET", f"resumes/retry/{resume_id}")
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
     assert response.json()["data"]["status"] == "success", "Resume fetch failed"
-
-
 
 
 @allure.feature("Resume Builder")
@@ -102,18 +97,15 @@ def test_tailor_resume_particular_job_valid_data(auth_api_data):
     """
     api, data = auth_api_data
     resume_id = create_base_resume(api, data)
-    print(resume_id)
     response = api.request("GET", "job-board/job-listings?page=1&take=1")
     assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
     job_id = response.json()["data"][0]["id"]
-    print(job_id)
     payload = {
         "jobId": job_id,
         "resumeId": resume_id
     }
     response = api.request("POST", "resumes/ats-review-base", json = payload)
     response_resume_id = response.json()["data"]["id"]
-    print(response_resume_id)
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     assert len(response.json()["data"]) > 0, "No tailored resume returned"
     data.resume_valid_ids.append(response_resume_id)
@@ -136,15 +128,11 @@ def test_submit_file_review(auth_api_data):
             "resumeName": (None, f'"{data.generate_resume_name()}"'),
             "file": ("sample_resume.pdf", file, "application/pdf"),
         }
-        print(files['resumeName'])
-        print(files['jobDescriptions'])
         response = api.request("POST", "resumes/ats-review-file", files=files)
-        print(response)
     assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
     response_data = response.json()
     assert "data" in response_data, "Key 'data' not found in response"
     assert len(response_data["data"]) > 0, "No data in response"
-    print(f"Resume ID: {response_data["data"][0]['id']}")
     data.resume_valid_ids.append(response_data["data"][0]["id"])
 
 
@@ -188,9 +176,25 @@ def test_fetch_resume_by_id(auth_api_data):
     response = api.request("GET", f"resume-ats/{resume_id}")
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 
-
-
-
+@allure.feature("Resume Builder")
+@allure.story("Update resume details - RB9.1")
+@pytest.mark.smoke
+@pytest.mark.regression
+def test_update_resume(auth_api_data):
+    """
+    Update resume details
+    """
+    api, data = auth_api_data
+    resume_id = create_resume(api, data)
+    payload = {"jobDescriptions": data.generate_job_description(1), "resumeName": data.generate_resume_name(), "resume": json.dumps(data.generate_resume())}
+    response = api.request("PATCH", f"resume-ats/{resume_id}", json=payload)
+    print(response)
+    assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+    response_data = response.json()
+    print(response_data)
+    #assert "data" in response_data, "Key 'data' not found in response"
+    #assert len(response_data["data"]) > 0, "No data in response"
+    #data.resume_valid_ids.append(response_data["data"][0]["id"])
 
 
 
@@ -266,7 +270,6 @@ def test_tailor_resume_resume_missing(auth_api_data):
     if "data" in response.json() :
         for i in response.json()["data"]:
             data.resume_valid_ids.append(i["id"])
-        print(data.resume_valid_ids)
 
 
 @allure.feature("Resume Builder")
