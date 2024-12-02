@@ -12,3 +12,4 @@ class BaseApi:
     def request(self, method, url, **kwargs):
         response = self.session.request(method, f"{self.base_url}{url}",verify=False, **kwargs)
         return response
+
