@@ -3,6 +3,5 @@ requests~=2.32.0
 allure-pytest
 selene>=2.0.b4
 python-dotenv~=1.0.1
-requests==2.31.0
 allure-python-commons~=2.13.5
 Faker~=33.1.0

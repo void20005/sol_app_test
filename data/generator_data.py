@@ -1,3 +1,4 @@
+import allure
 from faker import Faker
 import random
 import datetime
@@ -15,12 +16,15 @@ class GeneratorData:
         self.fake = Faker()
         self.resume_valid_ids = []
 
+    @allure.step("Generate some invalid resume id")
     def generate_resume_invalid_id(self):
         return 'abc12'
 
+    @allure.step("Generate some non existent resume id")
     def generate_resume_non_existent_id(self):
         return 11111111111
 
+    @allure.step("Generate job descriptions")
     def generate_job_description(self, qty):
         result = []
         for i in range(qty):
@@ -30,6 +34,7 @@ class GeneratorData:
     def generate_resume_name(self):
         return  self.fake.name()
 
+    @allure.step("Generate a resume(JSON)")
     def generate_resume(self):
         # Resume JSON generation
         return {
