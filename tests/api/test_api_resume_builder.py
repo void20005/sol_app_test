@@ -1,11 +1,21 @@
 import json
 import pytest
 import allure
+import logging
 
 from api.helpers import create_resume, create_base_resume, find_key_values
 from config import PATH_DATA, STATUS_OK, STATUS_CREATED, STATUS_BAD_REQUEST, STATUS_UNPROCESSABLE_ENTITY
 from tests.conftest import auth_api_data
 from jsonpath_ng import parse
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
 
 
 @allure.feature("Resume Builder")
@@ -129,18 +139,21 @@ def test_fetch_resumes_pagination(authorized_api):
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
     response_data = response.json()
     items = response_data.get("data", [])
+    logger.info(items)
     metadata = response_data.get("metadata", {}).get("pagination", {})
     assert len(items) <= number_of_pages, f"Expected at most {number_of_pages} resumes, got {len(items)}"
     assert metadata.get("page") == page, f"Unexpected page: {metadata.get('page')}"
     assert metadata.get("limit") == number_of_pages, f"Unexpected limit: {metadata.get('limit')}"
     assert metadata.get("hasNextPage") is not None, "Pagination metadata missing 'hasNextPage'"
     assert metadata.get("hasPreviousPage") is not None, "Pagination metadata missing 'hasPreviousPage'"
-    jsonpath_expr = parse(f"$..order_by")
-    created_at_list = [match.value for match in jsonpath_expr.find(response_data )]
-    sorted_created_at_list = sorted(created_at_list)
+    jsonpath_expr = parse(f"$..{order_by}")
+    sort_by_list = [match.value for match in jsonpath_expr.find(items)]
+    sorted_sort_by_list = sorted(sort_by_list)
+    logger.info(sort_by_list)
+    logger.info(sorted_sort_by_list)
     if order == "DESC":
-        sorted_created_at_list = sorted_created_at_list[::-1]
-    assert created_at_list == sorted_created_at_list, f"Items are not sorted by {order_by} in {order} order"
+        sorted_sort_by_list = sorted_sort_by_list[::-1]
+    assert sort_by_list == sorted_sort_by_list, f"Items are not sorted by {order_by} in {order} order"
     if metadata.get("hasNextPage"):
         next_page = page + 1
         response_next = api.request("GET", "resume-ats", params={"page": next_page, "take": number_of_pages, "orderBy": order_by, "order": order})
