@@ -15,6 +15,7 @@ class GeneratorData:
         # initiation
         self.fake = Faker()
         self.resume_valid_ids = []
+        self.base_resume_valid_ids = []
 
     @allure.step("Generate some invalid resume id")
     def generate_resume_invalid_id(self):

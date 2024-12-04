@@ -1,42 +1,58 @@
 import json
 import allure
-
+import pytest
+from jsonpath_ng import parse
+from config import STATUS_CREATED
 
 @allure.step("Create a resume")
 def create_resume(api, data):
-    """
-    Helper function to create a resume and return its ID.
-    """
     payload = {
         "jobDescriptions": json.dumps(data.generate_job_description(1)),
         "resumeName": data.generate_resume_name(),
         "resume": json.dumps(data.generate_resume())
     }
     response = api.request("POST", "resumes/ats-review-text", json=payload)
-    assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
-    response_data = response.json()
-    # Check new vail id is present in the response
-    assert "id" in response_data["data"][0], "Key 'id' not found in the response"
-    assert isinstance(response_data["data"][0]["id"], int), "id is not an integer"
-    # add new resumes ids into the list
-    for item in response_data["data"]:
-        data.resume_valid_ids.append(item["id"])
-    return data.resume_valid_ids[0]
+    assert response.status_code == STATUS_CREATED, f"Unexpected status code: {response.status_code}"
+    jsonpath_expr = parse(f"$..id")
+    result = [match.value for match in jsonpath_expr.find(response.json())]
+    if not result:
+        pytest.fail("Attempt to create base resume failed")
+    data.resume_valid_ids.extend(result)
+    assert all(isinstance(item, int) for item in result), "Unacceptable resume id format"
+    return result[0]
 
 @allure.step("Create a base-resume")
 def create_base_resume(api, data):
-    """
-    Helper function to create a base-resume and return its ID.
-    """
     payload = {
         "resumeName": data.generate_resume_name(),
         "resume": data.generate_resume()
     }
     response = api.request("POST", "base-resumes", json=payload)
-    assert response.status_code == 201, f"Unexpected status code: {response.status_code}"
-    response_data = response.json()
-    print(response_data['data']['id'])
-    assert "id" in response_data['data'], "Key 'id' not found in the response"
-    assert isinstance(response_data["data"]["id"], int), "id is not an integer"
-    resume_id = response_data["data"]["id"]
-    return resume_id
+    assert response.status_code == STATUS_CREATED, f"Unexpected status code: {response.status_code}"
+    jsonpath_expr = parse(f"$..id")
+    result = [match.value for match in jsonpath_expr.find(response.json())]
+    if not result:
+        pytest.fail("Attempt to create base resume failed")
+    data.base_resume_valid_ids.extend(result)
+    assert all(isinstance(item, int) for item in result), "Unacceptable resume id format"
+    return result[0]
+
+
+
+def find_key_values(data, key_to_find):
+    results = []
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if key == key_to_find:
+                results.append(value)
+            if isinstance(value, (dict, list)):
+                results.extend(find_key_values(value, key_to_find))
+    elif isinstance(data, list):
+        for item in data:
+            results.extend(find_key_values(item, key_to_find))
+    return results
+
+
+def find_key_values_(data, key_to_find):
+    jsonpath_expr = parse(f"$..{key_to_find}")
+    return [match.value for match in jsonpath_expr.find(data)]

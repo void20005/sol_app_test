@@ -19,7 +19,7 @@ def test_successful_login():
     # Step 2: Perform login
     login_page.login(USER_EMAIL, USER_PASSWORD)
     # Step 3: Verify successful login
-    s('button[aria-label="Sign out"]').should(be.visible)
+    login_page.should_see_element('button[aria-label="Sign out"]')
 
 @allure.tag("web")
 @allure.severity(allure.severity_level.CRITICAL)

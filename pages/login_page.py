@@ -1,15 +1,16 @@
 # pages/login_page.py
 from pages.base_page import BasePage
 import allure
+from locators.login_locators import LoginLocators
 
 
 class LoginPage(BasePage):
     @allure.step("Log in with email: {email}")
     def login(self, email: str, password: str):
         """Performs login using the provided email and password."""
-        self.type_text("[name='identifier']", email)
-        self.type_text("[name='password']", password)
-        self.click("button[type='submit']")
+        self.type_text(LoginLocators.EMAIL, email)
+        self.type_text(LoginLocators.PASSWORD, password)
+        self.click(LoginLocators.LOGIN_BUTTON)
         return self
 
     @allure.step("Click 'Forgot Password'")
