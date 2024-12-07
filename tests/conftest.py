@@ -1,34 +1,33 @@
-# tests/conftest.py
-
-import allure
 import logging
 import pytest
 from selene.support.shared import browser
 from api.base_api import BaseApi
-from config import USER_EMAIL, USER_PASSWORD, STATUS_OK
+from config import USER_EMAIL, USER_PASSWORD, STATUS_OK, BASE_URL
 from data.generator_data import GeneratorData
+from pages.login_page import LoginPage
+from locators.login_locators import LoginLocators
+
+
 
 logger = logging.getLogger(__name__)
 
 @pytest.fixture()
 def setup_browser():
-    #browser.config.base_url = "https://"
-    browser.config.window_width = 1200
-    browser.config.window_height = 800
+    browser.config.base_url=BASE_URL
+    browser.config.window_width=1200
+    browser.config.window_height=800
     yield
-    if browser.driver:
-        try:
-            allure.attach(
-                browser.driver.get_screenshot_as_png(),
-                name="screenshot_on_failure",
-                attachment_type=allure.attachment_type.PNG
-            )
-        except Exception as e:
-            print(f"Screenshot creating error: {e}")
-        finally:
-            browser.quit()
+    browser.quit()
 
-
+@pytest.fixture()
+def login(setup_browser):
+    """Authorization before each test function."""
+    page = LoginPage()
+    page.open(BASE_URL + "/login")
+    page.login(USER_EMAIL, USER_PASSWORD)
+    page.should_see_element(LoginLocators.LOGOUT_BUTTON)
+    yield
+    ##
 
 @pytest.fixture(scope="session")
 def auth_token():
@@ -43,6 +42,7 @@ def auth_token():
 
 
 @pytest.fixture(scope="session")
+
 def authorized_api(auth_token):
     api = BaseApi()
     api.session.headers['Authorization'] = f'Bearer {auth_token}'

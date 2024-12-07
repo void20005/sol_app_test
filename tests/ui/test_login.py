@@ -1,3 +1,4 @@
+
 import allure
 import pytest
 
@@ -5,6 +6,7 @@ from pages.login_page import LoginPage
 from config import BASE_URL, USER_EMAIL, USER_PASSWORD
 from selene.support.shared.jquery_style import s
 from selene.support.conditions import be, have
+from locators.login_locators import LoginLocators as LL
 
 
 @allure.tag('web')
@@ -14,12 +16,12 @@ from selene.support.conditions import be, have
 @pytest.mark.ui
 def test_successful_login():
     login_page = LoginPage()
-    # Step 1: Open the login page
     login_page.open(BASE_URL + "/login")
-    # Step 2: Perform login
     login_page.login(USER_EMAIL, USER_PASSWORD)
-    # Step 3: Verify successful login
-    login_page.should_see_element('button[aria-label="Sign out"]')
+    assert login_page.should_see_element(LL.LOGOUT_BUTTON), 'Login unsuccessful'
+
+
+
 
 @allure.tag("web")
 @allure.severity(allure.severity_level.CRITICAL)

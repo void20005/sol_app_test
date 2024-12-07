@@ -14,8 +14,7 @@ def generate_us_phone_with_faker():
 class GeneratorData:
     def __init__(self):
         """
-        Initialize the generator with the specified mode.
-        :param mode: "faker" for quick data generation, "manual" for validation testing.
+        Initialize the generator
         """
         self.fake = Faker()
         self.resume_valid_ids = []

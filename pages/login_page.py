@@ -30,3 +30,4 @@ class LoginPage(BasePage):
         """Clicks on the 'Sign in with Google' button."""
         self.click("[aria-label='Sign in with Google']")
         return self
+
