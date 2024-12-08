@@ -1,5 +1,6 @@
 import logging
 import pytest
+from selene import be
 from selene.support.shared import browser
 from api.base_api import BaseApi
 from config import USER_EMAIL, USER_PASSWORD, STATUS_OK, BASE_URL
@@ -14,8 +15,9 @@ logger = logging.getLogger(__name__)
 @pytest.fixture()
 def setup_browser():
     browser.config.base_url=BASE_URL
-    browser.config.window_width=1200
-    browser.config.window_height=800
+    browser.config.window_width=960
+    browser.config.window_height=1080
+    browser.config.timeout = 5
     yield
     browser.quit()
 
@@ -23,9 +25,11 @@ def setup_browser():
 def login(setup_browser):
     """Authorization before each test function."""
     page = LoginPage()
-    page.open(BASE_URL + "/login")
+    page.open(BASE_URL + "auth/signin")
+    page.should_see_element(LoginLocators.EMAIL)
     page.login(USER_EMAIL, USER_PASSWORD)
-    page.should_see_element(LoginLocators.LOGOUT_BUTTON)
+    browser.element("body").should(be.present)
+    assert page.should_see_element(LoginLocators.LOGOUT_BUTTON), "Login failed."
     yield
     ##
 

@@ -1,3 +1,4 @@
+
 class LoginLocators:
     EMAIL = '//form//input[@type="email"]'
     PASSWORD = '//form//input[@type="password"]'

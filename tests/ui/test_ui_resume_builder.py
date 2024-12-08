@@ -7,6 +7,7 @@ import pytest
 from selene import be
 from selene.core import query
 from selene.support.conditions import have
+from selene.support.shared import browser
 from selene.support.shared.jquery_style import s, ss
 
 from config import BASE_URL, USER_EMAIL, USER_PASSWORD
@@ -21,14 +22,15 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+
 @allure.feature("Resume Builder RB_UI 1.1")
 @allure.story("Check Resume Builder page is open")
 @pytest.mark.ui
 @pytest.mark.smoke
 def test_open_resume_builder_page(login):
     page = ResumeBuilderPage()
-    page.open(BASE_URL + 'resumes')
-    #page.open_resume_builder_page()
+    time.sleep(2)
+    page.open_resume_builder_page()
     assert page.should_see_element(RB_Loc.CREATE_NEW_RESUME_BUTTON), \
         "Create Resume Button is not found"
     assert page.should_see_element(RB_Loc.TAILOR_RESUME_BUTTON), \

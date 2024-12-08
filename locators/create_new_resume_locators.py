@@ -1,2 +1,5 @@
-class CreateNewResumeLocators:
-    PAGE_NAME_TEXT = 'h2[class*="text-text1"]'
+from locators.base_locators import BaseLocators
+
+
+class CreateNewResumeLocators(BaseLocators):
+    pass

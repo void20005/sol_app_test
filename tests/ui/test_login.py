@@ -16,7 +16,7 @@ from locators.login_locators import LoginLocators as LL
 @pytest.mark.ui
 def test_successful_login():
     login_page = LoginPage()
-    login_page.open(BASE_URL + "/login")
+    login_page.open(BASE_URL + "login")
     login_page.login(USER_EMAIL, USER_PASSWORD)
     assert login_page.should_see_element(LL.LOGOUT_BUTTON), 'Login unsuccessful'
 

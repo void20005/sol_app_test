@@ -1,4 +1,7 @@
-class ResumeBuilderLocators:
+from locators.base_locators import BaseLocators
+
+
+class ResumeBuilderLocators(BaseLocators):
     CREATE_NEW_RESUME_BUTTON = '//a[@href="/create-resume"]'
     TAILOR_RESUME_BUTTON = '//a[@href="/upload-resume"]'
     TABLE = 'table.w-full.caption-bottom.text-sm'
