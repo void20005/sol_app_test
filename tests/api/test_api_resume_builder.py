@@ -19,7 +19,7 @@ logger.addHandler(console_handler)
 
 
 @allure.feature("Resume Builder")
-@allure.story("Fetch Resume Details - RB1.1")
+@allure.story("Fetch Resume Details - API-RB1.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 @pytest.mark.integration
@@ -36,7 +36,7 @@ def test_retry_fetch_resume_valid_id(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Tailor Resume - RB2.1")
+@allure.story("Tailor Resume - API-RB2.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_tailor_resume_valid_data(auth_api_data):
@@ -56,7 +56,7 @@ def test_tailor_resume_valid_data(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Tailor Text Resume - RB3.1")
+@allure.story("Tailor Text Resume - API-RB3.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_tailor_resume_text_valid_data(auth_api_data):
@@ -65,7 +65,7 @@ def test_tailor_resume_text_valid_data(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Tailor Resume to JobID - RB4.1")
+@allure.story("Tailor Resume to JobID - API-RB4.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 @pytest.mark.integration
@@ -97,7 +97,7 @@ def test_tailor_resume_particular_job_valid_data(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Tailor File-Based Resume - RB5.1")
+@allure.story("Tailor File-Based Resume - API-RB5.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_submit_file_review(auth_api_data):
@@ -126,7 +126,7 @@ def test_submit_file_review(auth_api_data):
 
 ## !!!!no assertions on first and last pages yet
 @allure.feature("Resume Builder")
-@allure.story("Fetch resumes with pagination - RB6.1")
+@allure.story("Fetch resumes with pagination - API-RB6.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_fetch_resumes_pagination(authorized_api):
@@ -162,7 +162,7 @@ def test_fetch_resumes_pagination(authorized_api):
         assert items != next_items, "Next page items are identical to current page items"
 
 @allure.feature("Resume Builder")
-@allure.story("Fetch resumes statuses - RB7.1")
+@allure.story("Fetch resumes statuses - API-RB7.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_fetch_resumes_statuses(auth_api_data):
@@ -179,7 +179,7 @@ def test_fetch_resumes_statuses(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Fetch single resume by ID - RB8.1")
+@allure.story("Fetch single resume by ID - API-RB8.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_fetch_resume_by_id(auth_api_data):
@@ -193,7 +193,7 @@ def test_fetch_resume_by_id(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Update resume details - RB9.1")
+@allure.story("Update resume details - API-RB9.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 @pytest.mark.integration
@@ -208,7 +208,6 @@ def test_update_resume(auth_api_data):
     }
     response = api.request("PATCH", f"resume-ats/{resume_id}", json=payload)
     assert response.status_code == STATUS_OK, f"Unexpected status code: {response.status_code}"
-
     response = api.request("GET", f"resume-ats/{resume_id}")
     response_data = response.json()
     updated_resume = response_data.get("data", {}).get("resume")
@@ -220,7 +219,7 @@ def test_update_resume(auth_api_data):
 
 
 @allure.feature("Resume Builder")
-@allure.story("Delete resume by ID - RB10.1")
+@allure.story("Delete resume by ID - API-RB10.1")
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_delete_resume_by_id(auth_api_data):

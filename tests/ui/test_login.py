@@ -1,3 +1,4 @@
+from pickle import FALSE
 
 import allure
 import pytest
@@ -14,7 +15,8 @@ from locators.login_locators import LoginLocators as LL
 @allure.feature('Authentication')
 @allure.story('Successful login')
 @pytest.mark.ui
-def test_successful_login():
+@pytest.mark.skipif(False, reason="function not developed yet")
+def test_successful_login(setup_browser):
     login_page = LoginPage()
     login_page.open(BASE_URL + "login")
     login_page.login(USER_EMAIL, USER_PASSWORD)

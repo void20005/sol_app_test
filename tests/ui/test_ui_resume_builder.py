@@ -4,7 +4,7 @@ import warnings
 
 import allure
 import pytest
-from selene import be
+from selene import be, command
 from selene.core import query
 from selene.support.conditions import have
 from selene.support.shared import browser
@@ -13,7 +13,7 @@ from selene.support.shared.jquery_style import s, ss
 from config import BASE_URL, USER_EMAIL, USER_PASSWORD
 from pages.resume_builder_page import ResumeBuilderPage
 from locators.resume_builder_locators import ResumeBuilderLocators as RB_Loc
-
+from locators.edit_resume_locators import EditResumeLocators as EDIT_Loc
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -21,6 +21,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
+
 
 
 @allure.feature("Resume Builder RB_UI 1.1")
@@ -83,7 +84,6 @@ def test_verify_my_resumes_list(login):
 @allure.story("Pagination Navigation")
 @pytest.mark.ui
 @pytest.mark.smoke
-@pytest.mark.pagination
 def test_pagination(login):
     page = ResumeBuilderPage()
     page.open_resume_builder_page()
@@ -126,4 +126,93 @@ def test_pagination(login):
     assert int(updated_page) == 1, "Current page should be 1 after navigating back to the first page"
 
 
+@allure.feature("Resume Builder RB_UI 1.6")
+@allure.story("List&Grid views for Resume Table")
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_resume_table_view_option_button(login):
+    page = ResumeBuilderPage()
+    page.open_resume_builder_page()
+    assert page.should_see_element(RB_Loc.TABLE), 'List view of My Resumes table is unavailable'
+    page.click(RB_Loc.GRID_VIEW_BUTTON)
+    assert page.should_see_element(RB_Loc.TABLE_GRID), 'Greed view of My Resumes table is unavailable'
+    page.click(RB_Loc.LIST_VIEW_BUTTON)
+    assert page.should_see_element(RB_Loc.TABLE), 'List View selector of My Resumes table not works'
 
+
+
+@allure.feature("Resume Builder RB_UI 1.7")
+@allure.story("Entity in Resume Table is clickable")
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_entity_resume_table_clickable(login):
+    page = ResumeBuilderPage()
+    page.open_resume_builder_page()
+    rows = ss(RB_Loc.ROWS)
+    if len(rows) < 1:
+        warnings.warn("There is no items in My resume table!\
+         Test row resume is clickable")
+        pytest.skip("No rows available in the My Resume table. Skipping the test.")
+    for i in range(len(rows)):
+        resume_name = rows[i].element(RB_Loc.CELL_IN_ROW.format(index=1)).get(query.text)
+        rows[i].click()
+        assert page.should_have_title('Jobsolv | Edit Resume'), \
+            'Click on the resume row is unsuccessful'
+        assert s(EDIT_Loc.RESUME_NAME_FIELD).get(query.text) == resume_name, \
+            'Click on the resume row is unsuccessful'
+        page.click(RB_Loc.RESUME_BUILDER_BUTTON)
+
+
+
+
+@allure.feature("Resume Builder RB_UI 1.8 & 1.9")
+@allure.story("Resume menu in the resume row is available and allows to navigate to the Edit page")
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_resume_menu_resume_edit_button(login):
+    page = ResumeBuilderPage()
+    page.open_resume_builder_page()
+    rows = ss(RB_Loc.ROWS)
+    if len(rows) < 1:
+        warnings.warn("There is no items in My resume table!\
+         Test row resume menu is missed")
+        pytest.skip("No rows available in the My Resume table. Skipping the test.")
+    for i in range(len(rows)):
+        rows[i].perform(command.js.scroll_into_view)
+        rows[i].element(RB_Loc.CELL_IN_ROW.format(index=4)).click()
+        page.click(RB_Loc.RESUME_ROW_MENU_EDIT_BUTTON)
+        assert page.should_have_title('Jobsolv | Edit Resume'), \
+            "Edit button in the menu doesn't work"
+        page.click(RB_Loc.RESUME_BUILDER_BUTTON)
+
+
+
+@allure.feature("Resume Builder RB_UI 1.10")
+@allure.story("Resume menu in the resume row is available and allows open Delete Resume modal form")
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_resume_menu_resume_delete_button(login):
+    page = ResumeBuilderPage()
+    page.open_resume_builder_page()
+    rows = ss(RB_Loc.ROWS)
+    if len(rows) < 1:
+        warnings.warn("There is no items in My resume table!\
+         Test row resume menu is missed")
+        pytest.skip("No rows available in the My Resume table. Skipping the test.")
+    for i in range(len(rows)):
+        rows[i].perform(command.js.scroll_into_view)
+        rows[i].element(RB_Loc.CELL_IN_ROW.format(index=4)).click()
+        page.click(RB_Loc.RESUME_ROW_MENU_DELETE_BUTTON)
+        assert page.should_see_element(RB_Loc.MODAL_MESSAGE), \
+            "Delete button doesn't work. Modal dialog is absent"
+        page.click(RB_Loc.MODAL_CANCEL_BUTTON)
+
+
+
+
+@allure.feature("Resume Builder RB_UI 1.11")
+@allure.story("Verify a sorting the list (sort by createdAt ASC)")
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_sort_resume_table(login):
+    pass

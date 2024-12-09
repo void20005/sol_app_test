@@ -2,7 +2,7 @@
 from selene.support.shared import browser
 from selene.support.shared.jquery_style import s
 from selene.support.conditions import be
-from selene import have
+from selene import have, query
 import allure
 
 
@@ -24,6 +24,11 @@ class BasePage:
         """Clears the input field and types the specified text."""
         s(locator).should(be.visible).clear().type(text)
         return self
+
+    @allure.step("Type text '{text}' into element: {locator}")
+    def get_text(self, locator: str):
+        """Clears the input field and types the specified text."""
+        return s(locator).should(be.visible).get(query.text)
 
     @allure.step("Verify page title is: {title}")
     def should_have_title(self, title: str):

@@ -98,7 +98,7 @@ class GeneratorData:
     @allure.step("Generate US phone")
     def generate_valid_us_phone_number(self):
         country_code = "+1"
-        area_code = f"{random.randint(2, 9)}{random.randint(0, 9)}{random.randint(0, 9)}"
+        area_code = "205"#f"{random.randint(2, 9)}{random.randint(0, 9)}{random.randint(0, 9)}"
         central_office_code = f"{random.randint(2, 9)}{random.randint(0, 9)}{random.randint(0, 9)}"
         line_number = f"{random.randint(0, 9)}{random.randint(0, 9)}{random.randint(0, 9)}{random.randint(0, 9)}"
         phone_number = f"{country_code}{area_code}{central_office_code}{line_number}"

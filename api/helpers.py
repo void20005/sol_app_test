@@ -3,7 +3,14 @@ import allure
 import pytest
 from jsonpath_ng import parse
 from config import STATUS_CREATED
+import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 @allure.step("Create a resume")
 def create_resume(api, data):
     payload = {
@@ -27,6 +34,7 @@ def create_base_resume(api, data):
         "resumeName": data.generate_resume_name(),
         "resume": data.generate_resume()
     }
+    #logger.info(payload)
     response = api.request("POST", "base-resumes", json=payload)
     assert response.status_code == STATUS_CREATED, f"Unexpected status code: {response.status_code}"
     jsonpath_expr = parse(f"$..id")
