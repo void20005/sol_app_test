@@ -6,3 +6,5 @@ python-dotenv~=1.0.1
 allure-python-commons~=2.13.5
 Faker~=33.1.0
 jsonpath-ng~=1.7.0
+selenium-wire~=5.1.0
+future~=1.0.0

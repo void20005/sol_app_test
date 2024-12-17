@@ -214,5 +214,16 @@ def test_resume_menu_resume_delete_button(login):
 @allure.story("Verify a sorting the list (sort by createdAt ASC)")
 @pytest.mark.ui
 @pytest.mark.smoke
-def test_sort_resume_table(login):
-    pass
+def test_sorting_by_created_at(login, authorized_api):
+    page = ResumeBuilderPage()
+    page.open_resume_builder_page()
+    response = authorized_api.request("GET", "/resume-ats?page=1&take=10&orderBy=desc&sortBy=createdAt")
+    assert response.status_code == 200, "API return incorrect status"
+    api_data = response.json()["data"]
+    sorted_api_data = sorted(api_data, key=lambda k: k["createdAt"], reverse=True)
+    sorted_api_names = [item["resumeName"] for item in sorted_api_data]
+    logger.info(f"Resumes from API (sorted by createdAt): {sorted_api_names}")
+    resume_rows = ss(RB_Loc.ROWS)
+    ui_resume_names = [row.element('./td[1]').get(query.text) for row in resume_rows]
+    logger.info(f"Resumes from UI: {ui_resume_names}")
+    assert ui_resume_names == sorted_api_names[:len(ui_resume_names)], "Sorting is invalid"
